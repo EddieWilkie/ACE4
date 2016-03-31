@@ -1,6 +1,7 @@
+import java.io.IOException;
 import java.io.*;
-import java.net.*;
-import java.util.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public final class WebServer {
 	
@@ -20,13 +21,33 @@ public final class WebServer {
 }
 
 final class HttpRequest implements Runnable{
-	Socket client;
-	public HttpRequest(Socket client){
-		this.client = client;
+	private Socket socket;
+	final static String CRLF = "\r\n";
+	public HttpRequest(Socket socket){
+		this.socket = socket;
 	}
 
 	@Override
 	public void run() {
-		
+		try {
+			processRequest();
+		} catch (Exception e) {
+			System.out.println(e);
+		}
 	}
+	
+	private void processRequest() throws Exception{
+		//Input and output streams
+		InputStream is = socket.getInputStream();
+		OutputStream os = socket.getOutputStream();
+		//Input filters
+		InputStreamReader isr = new InputStreamReader(is);
+		BufferedReader br = new BufferedReader(isr);
+		
+		String requestLine = br.readLine();
+		
+		System.out.println();
+		System.out.println(requestLine);
+	}
+			
 }
