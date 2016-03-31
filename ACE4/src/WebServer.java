@@ -48,6 +48,15 @@ final class HttpRequest implements Runnable{
 		
 		System.out.println();
 		System.out.println(requestLine);
+		
+		String headerLine = null;
+		while((headerLine = br.readLine()).length() != 0)
+			System.out.println(headerLine);
+		
+		//close streams and socket.
+		os.close();
+		br.close();
+		socket.close();
 	}
 			
 }
