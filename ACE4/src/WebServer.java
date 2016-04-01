@@ -1,4 +1,4 @@
-import java.io.IOException;
+import java.util.*;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -48,6 +48,36 @@ final class HttpRequest implements Runnable{
 		
 		System.out.println();
 		System.out.println(requestLine);
+		StringTokenizer tokens = new StringTokenizer(requestLine);
+		tokens.nextToken(); //skip over the GET request
+		String fileName = tokens.nextToken();
+		
+		//Prepend a "." so that the file request is within the current working directory.
+		fileName = "." + fileName;
+		
+		//Open the requested file.
+		FileInputStream fis = null;
+		boolean fileExists = true;
+		try{
+			
+			fis = new FileInputStream(fileName);
+		}catch(FileNotFoundException e){
+			fileExists = false;
+		}
+		
+		String statusLine = null;
+		String contentTypeLine = null;
+		String entityBody = null;
+		//check to see whether the file exists or not.
+		if(fileExists){
+			statusLine = tokens.nextToken();
+			contentTypeLine = "Content-type: " + contentType( fileName) + CRLF;
+		}else {
+				statusLine = tokens.nextToken();
+				contentTypeLine = tokens.nextToken();
+				entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + 
+							 "<BODY>404 Not Found</BODY></HTML>";
+		}
 		
 		String headerLine = null;
 		while((headerLine = br.readLine()).length() != 0)
@@ -58,6 +88,10 @@ final class HttpRequest implements Runnable{
 		br.close();
 		socket.close();
 		
+	}
+	
+	private static String contentType(String fileName){
+		return null;
 	}
 			
 }
