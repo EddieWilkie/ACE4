@@ -7,8 +7,7 @@ public final class WebServer {
 	
 	public static void main(String[] args) throws IOException{
 		//set port number
-		final int port = 6789;
-		@SuppressWarnings("resource")
+		final int port = 2108;
 		ServerSocket socket = new ServerSocket(port);
 		while(true){
 			Socket client = socket.accept();
@@ -21,8 +20,9 @@ public final class WebServer {
 }
 
 final class HttpRequest implements Runnable{
-	private Socket socket;
+	Socket socket;
 	final static String CRLF = "\r\n";
+	
 	public HttpRequest(Socket socket){
 		this.socket = socket;
 	}
@@ -39,10 +39,9 @@ final class HttpRequest implements Runnable{
 	private void processRequest() throws Exception{
 		//Input and output streams
 		InputStream is = socket.getInputStream();
-		OutputStream os = socket.getOutputStream();
+		DataOutputStream os =  new DataOutputStream(socket.getOutputStream());
 		//Input filters
-		InputStreamReader isr = new InputStreamReader(is);
-		BufferedReader br = new BufferedReader(isr);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		
 		String requestLine = br.readLine();
 		
@@ -58,8 +57,8 @@ final class HttpRequest implements Runnable{
 		//Open the requested file.
 		FileInputStream fis = null;
 		boolean fileExists = true;
+		
 		try{
-			
 			fis = new FileInputStream(fileName);
 		}catch(FileNotFoundException e){
 			fileExists = false;
@@ -70,14 +69,36 @@ final class HttpRequest implements Runnable{
 		String entityBody = null;
 		//check to see whether the file exists or not.
 		if(fileExists){
-			statusLine = tokens.nextToken();
-			contentTypeLine = "Content-type: " + contentType( fileName) + CRLF;
+			statusLine = "HTTP/1.0 200 OK" + CRLF;
+			contentTypeLine = "Content-type: " + contentType(fileName) + CRLF;
 		}else {
-				statusLine = tokens.nextToken();
-				contentTypeLine = tokens.nextToken();
+				statusLine = "HTTP/1.0 404 Not Found" + CRLF;
+				contentTypeLine = "Content-type: " + contentType(fileName) + CRLF;
 				entityBody = "<HTML>" + "<HEAD><TITLE>Not Found</TITLE></HEAD>" + 
-							 "<BODY>404 Not Found</BODY></HTML>";
+							 "<BODY>Not Found</BODY></HTML>";
 		}
+		// Send the status line
+		os.writeBytes(statusLine);
+		
+		//send the content type line.
+		os.writeBytes(contentTypeLine);
+		
+		//send a blank line to indicate the end of the header lines.
+		os.writeBytes(CRLF);
+		
+		if(fileExists) { 
+			sendBytes(fis, os);
+			os.writeBytes(statusLine);
+			fis.close();
+		}else {
+			os.writeBytes(statusLine);
+			os.writeBytes(entityBody);
+			os.writeBytes(contentTypeLine);
+		}
+		
+		System.out.println("*********************");
+		System.out.println(fileName);
+		System.out.println("*********************");
 		
 		String headerLine = null;
 		while((headerLine = br.readLine()).length() != 0)
@@ -89,9 +110,28 @@ final class HttpRequest implements Runnable{
 		socket.close();
 		
 	}
+	private static void sendBytes(FileInputStream fis, OutputStream os) throws Exception{
+		//Construct a 1K buffer to hold bytes on their way to the socket.
+		byte[] buffer = new byte[1024];
+		int bytes = 0;
+		
+		//Copy requested file into the socket's output stream.
+		while((bytes = fis.read(buffer)) != -1)
+			os.write(buffer, 0, bytes);
+	}
 	
 	private static String contentType(String fileName){
-		return null;
+		
+		if(fileName.endsWith(".htm") || fileName.endsWith(".html")) {
+			return "text/html";
+		}
+		if(fileName.endsWith(".gif")){
+			return "image/gif";
+		}
+		if(fileName.endsWith(".jpeg") || fileName.endsWith(".jpg")){
+			return "image/jpeg";
+		}
+		return "application.octet-stream";
 	}
 			
 }
