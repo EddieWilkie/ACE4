@@ -57,6 +57,7 @@ final class HttpRequest implements Runnable{
 		os.close();
 		br.close();
 		socket.close();
+		
 	}
 			
 }
