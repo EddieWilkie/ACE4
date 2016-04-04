@@ -12,7 +12,7 @@ public final class ProxyServer {
 		ServerSocket socket = new ServerSocket(port);
 		while(true){
 			Socket client = socket.accept();
-			HttpRequest request = new HttpRequest(client,true);
+			HttpRequest request = new HttpRequest(client,false);
 			Thread thread = new Thread(request);
 			thread.start();
 		}
