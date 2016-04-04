@@ -41,8 +41,6 @@ public final class HttpRequest implements Runnable{
 		//extract the fileName
 		String fileName = trimFileName(urlName);//make a fileName from the url such as google.com
 		
-		
-		
 		//check if file exists in cache...
 		if(cache.containsKey(fileName)){
 			FileInputStream fis = new FileInputStream("./cache/" + cache.get(fileName).getFileName());
@@ -120,7 +118,6 @@ public final class HttpRequest implements Runnable{
 	}
 	
 	private static void fillCache(){
-		
 		File folder = new File("./cache/");
 		File[] listOfFiles = folder.listFiles();
 
@@ -141,14 +138,29 @@ public final class HttpRequest implements Runnable{
 		else if(fileName.endsWith(".jpg") || fileName.endsWith(".jpeg"))
 			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".jpg";
 		else if(fileName.endsWith(".html"))
-			fileName = fileName.substring(11,fileName.length()-5).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".min.css";
+			fileName = fileName.substring(11,fileName.length()-5).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".html";
 		else if(fileName.endsWith(".css"))
-			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".min.css";
+			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".css";
+		else if(fileName.endsWith(".min.css"))
+			fileName = fileName.substring(7,fileName.length()-8).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".min.css";
 		else if(fileName.endsWith(".js"))
-			fileName = fileName.substring(7,fileName.length()-3).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".app.js";
-		else 
-			fileName = fileName.substring(7,fileName.length()-3).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".html";
-		System.out.println("fileName: " + fileName);
+			fileName = fileName.substring(7,fileName.length()-3).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".js";
+		else if(fileName.endsWith(".ttf"))
+			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".ttf";
+		else if(fileName.endsWith(".app.js"))
+			fileName = fileName.substring(7,fileName.length()-7).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".app.js";
+		else if(fileName.endsWith(".woff"))
+			fileName = fileName.substring(7,fileName.length()-5).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".woff";
+		else if(fileName.endsWith(".woff2"))
+			fileName = fileName.substring(7,fileName.length()-6).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".woff2";
+		else if(fileName.endsWith(".svg"))
+			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".svg";
+		else if(fileName.endsWith(".gif"))
+			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".gif";
+		else if(fileName.endsWith(".png"))
+			fileName = fileName.substring(7,fileName.length()-4).replace('/', '_').replace('.', 'd').replace(':', 'd') + ".png";
+		else
+			fileName = fileName.substring(7,fileName.length()).replace('/', '_').replace('.', 'd').replace(':', 'd');
 		return fileName;
 	}
 	
